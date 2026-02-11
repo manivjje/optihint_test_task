@@ -1,7 +1,5 @@
+import TodoContent from '@/components/TodoContent';
+
 export default function Home() {
-  return (
-    <>
-      <h1>Список завдань</h1>
-    </>
-  );
+  return <TodoContent />;
 }
