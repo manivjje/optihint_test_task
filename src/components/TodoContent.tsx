@@ -6,10 +6,14 @@ import TodoCounter from '@/components/TodoCounter';
 import { useEffect, useState } from 'react';
 import { createTodo, deleteTodo, fetchTodos, updateTodo } from '@/api';
 import { CreateTodoDto, UpdateTodoDto } from '@/api/types';
-import { Todo } from '@/types';
+import { FilterOption, Todo } from '@/types';
+import FiltersList from './FiltersList';
 
 export default function TodoContent() {
   const [todos, setTodos] = useState<Todo[]>([]);
+
+  const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
+  const [selectedFilter, setSelectedFilter] = useState<FilterOption['type']>('all');
 
   const [counter, setCounter] = useState<number>(0);
 
@@ -34,14 +38,29 @@ export default function TodoContent() {
     setTodos(todos.filter((item) => item.id !== todoId));
   };
 
+  const handleFilterTodos = (filterType: FilterOption['type']) => {
+    setSelectedFilter(filterType);
+
+    switch (filterType) {
+      case 'completed':
+        return setFilteredTodos(todos.filter((item) => item.completed));
+      case 'uncompleted':
+        return setFilteredTodos(todos.filter((item) => !item.completed));
+      default:
+        return setFilteredTodos(todos);
+    }
+  };
+
   useEffect(() => {
     fetchTodos().then((response) => {
       setTodos(response);
+      setFilteredTodos(response);
     });
   }, []);
 
   useEffect(() => {
     setCounter(todos.filter((item) => !item.completed).length);
+    handleFilterTodos(selectedFilter);
   }, [todos]);
 
   return (
@@ -50,8 +69,9 @@ export default function TodoContent() {
       <TodoCounter counter={counter} className="mb-4" />
 
       <CreateTodoForm onCreate={handleCreateTodo} className="mb-4" />
+      <FiltersList onSelect={(type) => handleFilterTodos(type)} selectedFilter={selectedFilter} className="mb-4" />
       <TodoList
-        todos={todos}
+        todos={filteredTodos}
         onDelete={(id) => handleDeleteTodo(id)}
         onComplete={(id, completed) => handleUpdateTodo({ id, completed })}
       />
