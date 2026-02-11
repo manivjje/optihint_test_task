@@ -4,7 +4,3 @@ export interface Todo {
   completed: boolean;
   createdAt: Date;
 }
-
-export interface CreateTodoDto {
-  text: string;
-}
