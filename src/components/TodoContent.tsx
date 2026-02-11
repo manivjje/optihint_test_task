@@ -25,7 +25,6 @@ export default function TodoContent() {
   const handleUpdateTodo = async (dto: UpdateTodoDto): Promise<void> => {
     const todoIndex = todos.findIndex((item) => item.id === dto.id);
     if (todos[todoIndex]) {
-      console.log('to update');
       const updatedTodo = await updateTodo(dto);
       const updatedTodos = [...todos];
       updatedTodos[todoIndex] = updatedTodo;
@@ -73,7 +72,7 @@ export default function TodoContent() {
       <TodoList
         todos={filteredTodos}
         onDelete={(id) => handleDeleteTodo(id)}
-        onComplete={(id, completed) => handleUpdateTodo({ id, completed })}
+        onUpdate={(dto) => handleUpdateTodo(dto)}
       />
     </div>
   );
