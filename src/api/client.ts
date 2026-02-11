@@ -10,13 +10,11 @@ class TodosApiClient {
   }
 
   async get(): Promise<Todo[]> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       const response = this.getItem();
       if (response) {
         return resolve(response);
       }
-
-      return reject(this.serverError);
     });
   }
 
@@ -30,7 +28,7 @@ class TodosApiClient {
 
     return new Promise((resolve, _reject) => {
       this.setItem(newTodo);
-      resolve(newTodo);
+      return resolve(newTodo);
     });
   }
 
@@ -73,10 +71,15 @@ class TodosApiClient {
 
   private setItem(data: Todo[] | Todo, safe: boolean = true): void {
     const currentData = this.getItem();
+    const receivedData = Array.isArray(data) ? data : [data];
+
     if (currentData) {
       const saveData = safe ? [...currentData] : [];
-      localStorage.setItem(this.storageKey, JSON.stringify([...saveData, ...(Array.isArray(data) ? data : [data])]));
+      localStorage.setItem(this.storageKey, JSON.stringify([...saveData, ...receivedData]));
+      return;
     }
+
+    localStorage.setItem(this.storageKey, JSON.stringify(receivedData));
   }
 }
 
